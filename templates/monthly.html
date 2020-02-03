@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Monthly Report</title>
+    <!-- <link rel="stylesheet" href="css\main.css"> -->
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.1.0/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        body {
+            width: 100%;
+            font-family: 'Muli', sans-serif;
+            position: relative;
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .header {
+            width: 100%;
+            height: 150px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-height: 100px;
+        }
+
+        .summary {
+            margin: 10px 0;
+        }
+
+        table {
+            font-size: 10px;
+        }
+        th, td{
+            padding: 5px 2px;
+            text-align: center;
+        }
+        .footer{
+            position: relative;
+            bottom: 0;
+        }
+    </style>
+    
+    
+</head>
+
+<body>
+    <div class="header">
+        <div class="title">
+            <h1>Payment Report</h1>
+            <h2 id="propName">Property Name</h2>
+            <h2 id="propAddress">Property Address</h2>
+        </div>
+        <div class="logo">
+            <img src="assets/bukitvista.png" alt="Bukit Vista">
+        </div>
+    </div>
+    
+    <div id="summaryDiv" class="summary">
+        <!-- Monthly summary -->
+        <h1>Summary</h1>
+        <div id="result"></div>
+    </div>
+    <br>
+    <hr>
+    <br>
+    <table>
+        <!-- Bookings made this month -->
+        <tr id="result2">
+        </tr>
+    </table>
+    <div class="footer">
+        <h2>Bukit Vista Finance</h2>
+        <h2>Contact :</h2>
+        <h2>Name - 08229929929</h2>
+        <!-- <h2>{{financename}} - {{financenumber}}</h2> -->
+    </div>
+
+
+<!-- Summary -->
+<script id="summary" type="text/template">
+    {{#data}}
+        <div>
+            <h2>Total transaction =  {{total_transaction}}</h2>
+            <h2>Payment Earned = {{payment_done_partner}}</h2>
+            <h2>Payment to Bukit Vista = {{payment_done_bukitvista}}</h2>
+        </div>
+    {{/data}}
+</script>
+<script>
+    $.getJSON('/data/payoutSummary.json', function (data) {
+    var templ = $('#summary').html();
+    var mustch = Mustache.to_html(templ, data);
+    $("#result").html(mustch);
+});
+</script>
+
+<!-- Bookings stats -->
+<script id="stats" type="text/template">
+    <tr>
+        <th>Booking Id</th>
+        <th>Check-in</th>
+        <th>Check-out</th>
+        <th>Total Nights</th>
+        <th>Nights in January</th>
+        <th>Total Revenue ($)</th>
+        <th>Price per Night ($)</th>
+        <th>January Revenue ($)</th>
+        <th>Revenue Outside January ($)</th>
+    </tr>
+    {{#data}}
+    <tr>
+        <td>{{booking_id}}</td>
+        <td>{{check_in}}</td>
+        <td>Check-out</td>
+        <td>Total Nights</td>
+        <td>Nights in January</td>
+        <td>{{booking_value}}</td>
+        <td>Price per Night</td>
+        <td>January Revenue</td>
+        <td>Revenue Outside January</td>
+    </tr>   
+    {{/data}}
+</script>
+<script>
+    $.getJSON('/data/getBookingListWithPayout.json', function (data) {
+    var templ = $('#stats').html();
+    var mustch = Mustache.to_html(templ, data);
+    $("#result2").html(mustch);
+});
+</script>
+</body>
+
+</html>
